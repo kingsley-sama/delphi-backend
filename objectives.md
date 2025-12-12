@@ -1,0 +1,5 @@
+- ai powered quizz generators like gemini
+- train models on the best materials each cartegory and tier for each grade and class
+- technical tools to streamline our processes
+- deep study on byjus
+- make it stick
