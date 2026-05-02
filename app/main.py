@@ -1,12 +1,14 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
+from database import db_engine
 from route import user_route
 from typing import Annotated
-from fastapi.security import OAuth2PasswordBearer
+from models import Base
+import models
 import uvicorn
 
 
 app = FastAPI()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+Base.metadata.create_all(bind=db_engine)
 app.include_router(user_route)
 
 @app.get("/")
