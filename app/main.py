@@ -1,61 +1,23 @@
-#!/usr/bin/env python3
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from core.config import settings
-from utils.db import init_db
+from fastapi import FastAPI, Depends, HTTPException, status
+from route import user_route
+from typing import Annotated
+from fastapi.security import OAuth2PasswordBearer
+import uvicorn
+from schema import UserBase
+from database import get_db
+from typing import Annotated
+from utils import find_user_single
+from schema import ReturnUser
+from sqlalchemy.orm import Session
 
-# Import all routers
-from routes.auth import auth_router
-from routes.users import user_router
-from routes.courses import course_router
-from routes.quizzes import quiz_router
-from routes.ai import ai_router
+app = FastAPI()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+app.include_router(user_route)
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await init_db()
-    yield
-
-app = FastAPI(
-    title=settings.APP_NAME,
-    version="1.0.0",
-    description="Delphi Educational Platform Backend API",
-    lifespan=lifespan
-)
-
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Include all routers
-app.include_router(auth_router)
-app.include_router(user_router)
-app.include_router(course_router)
-app.include_router(quiz_router)
-app.include_router(ai_router)
-
-
-@app.get('/')
-def root():
-    return {
-        "message": "Welcome to Delphi Educational Platform API",
-        "version": "1.0.0",
-        "docs": "/docs"
-    }
-
-
-@app.get('/health')
-def health_check():
-    return {"status": "healthy"}
+@app.get("/")
+def get():
+    return {"body": "welcome to delphi ai"}
 
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=settings.PORT, reload=settings.DEBUG)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
