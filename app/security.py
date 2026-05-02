@@ -3,8 +3,8 @@ from core import Settings
 from jose import jwt
 
 pwd_context = CryptContext(
-    schemes=["bycript"], 
-    DeprecationWarning="auto"
+    schemes=["bcrypt"], 
+    deprecated="auto"
 )
 def hash_password(password:str) -> str:
     return pwd_context.hash(password)

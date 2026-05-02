@@ -5,6 +5,9 @@ from database import get_db
 from typing import Annotated
 from fastapi import HTTPException, status, Depends 
 from security import decode_access_token
+from fastapi.security import OAuth2PasswordBearer
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def authenticate_user(email:str, password:str, db: Session):
     user = db.query(User).filter(User.email ==  email).first()
@@ -20,7 +23,7 @@ def login_user(email:str, password:str, db:Session):
     return {"access_token": token, "token_type": "bearer"}
     
 
-async def get_current_user(token:Annotated[str, Depends()], db: Annotated[Session, Depends(get_db)]):
+async def get_current_user(token:Annotated[str, Depends(oauth2_scheme)], db: Annotated[Session, Depends(get_db)]):
     try:
         payload = decode_access_token(token)
         email =  payload.get("sub")

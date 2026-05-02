@@ -5,6 +5,9 @@ from schema import UserCreate, ReturnUser
 from sqlalchemy.orm import Session
 from models import User
 from typing import Annotated
+from typing import Annotated
+from utils.require_role import require_role
+
 user_route = APIRouter(prefix="/users", tags=[Tags.users])
 
 
@@ -35,3 +38,7 @@ def create_user(user: UserCreate, db:Annotated[Session, Depends(get_db)]):
       db.commit()
       db.refresh(new_user)
       return new_user
+
+@user_route.get("/me")
+async def get_current_user(user: Annotated[User, Depends(require_role("user"))]):
+      return {"message": f'welcome: {user.username}'}

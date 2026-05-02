@@ -3,12 +3,7 @@ from route import user_route
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
 import uvicorn
-from schema import UserBase
-from database import get_db
-from typing import Annotated
-from utils import find_user_single
-from schema import ReturnUser
-from sqlalchemy.orm import Session
+
 
 app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
