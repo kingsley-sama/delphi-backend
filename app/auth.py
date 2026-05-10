@@ -9,19 +9,30 @@ from fastapi.security import OAuth2PasswordBearer
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-def authenticate_user(email:str, password:str, db: Session):
-    user = db.query(User).filter(User.email ==  email).first()
-    if not user or not verify_password(password, user.password_hash):
-        return None
-    return user
 
-def login_user(email:str, password:str, db:Session):
-    user = authenticate_user(email, password, db)
+
+async def authenticate_user(email:str, password:str, db: Session):
+    user = db.query(User).filter(User.email ==  email).first()
     if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found")
+    if  not verify_password(password, user.password_hash):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    token = create_access_token({"sub": user.email})
+    return {"access_token": token, "token_type": "bearer"}
+   
+
+
+async def verify_access_token(email:str, password:str, db: Session):
+    user = db.query(User).filter(User.email ==  email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found")
+    if  not verify_password(password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     token = create_access_token({"sub": user.email})
     return {"access_token": token, "token_type": "bearer"}
     
+
+
 
 async def get_current_user(token:Annotated[str, Depends(oauth2_scheme)], db: Annotated[Session, Depends(get_db)]):
     try:

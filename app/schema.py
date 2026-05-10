@@ -15,3 +15,12 @@ class UserCreate(UserBase):
 class ReturnUser(UserBase):
     id:UUID
     created_at:datetime
+
+class EmailSchema(BaseModel):
+    from_email: EmailStr
+    to: EmailStr
+    subject: str
+    html: str
+    
+    class Config:
+        populate_by_name = True 

@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  delphi-backend:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+        - DB_HOST=postgres-dev
+        - DB_PORT=5432
+        - DB_NAME=delphi
+        - DB_USER=postgres
+        - DB_PASSWORD=postgres
+  postgres-dev:
+    image: postgres:13
+  redis-dev:
+    image: redis:6
+    

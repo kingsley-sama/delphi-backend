@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from database import db_engine
-from route import user_route
+from route import auth_route
 from typing import Annotated
 from models import Base
 import models
@@ -9,7 +9,7 @@ import uvicorn
 
 app = FastAPI()
 Base.metadata.create_all(bind=db_engine)
-app.include_router(user_route)
+app.include_router(auth_route)
 
 @app.get("/")
 def get():
